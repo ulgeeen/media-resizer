@@ -1,0 +1,108 @@
+:root {
+  --bg: #1d1e21;
+  --panel: #2a2b2f;
+  --field: #343539;
+  --line: #4a4c52;
+  --text: #ececee;
+  --muted: #a3a6ad;
+  --accent: #2f7fd0;
+  --accent-hover: #2667ab;
+  --ok: #3fb27f;
+  --warn: #e0a33a;
+  --radius: 8px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 20px 16px 32px; }
+
+header { text-align: center; margin-bottom: 16px; }
+h1 { margin: 0 0 2px; font-size: 24px; }
+.sub { margin: 0; color: var(--muted); font-size: 13px; }
+.privacy { margin: 8px 0 0; color: var(--ok); font-size: 13px; }
+
+.panel { background: var(--panel); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 12px; }
+
+.row { display: grid; grid-template-columns: 130px 1fr auto; align-items: center; gap: 10px; padding: 6px 0; }
+.label { font-weight: 500; }
+.field {
+  min-height: 38px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--field); color: var(--muted); overflow-wrap: anywhere;
+}
+.field.has, .drop.has { color: var(--text); }
+.drop { border-style: dashed; }
+.drop.over { border-color: var(--accent); background: #2d3a4a; }
+.btns { display: flex; gap: 6px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 14px;
+  border: 0; border-radius: var(--radius); background: var(--accent); color: #fff; font: inherit;
+  cursor: pointer; white-space: nowrap;
+}
+.btn:hover { background: var(--accent-hover); }
+.btn.ghost { background: #3c4350; }
+.btn.ghost:hover { background: #4a5262; }
+.btn:focus-within, .btn:focus-visible, .tabs button:focus-visible, .start:focus-visible,
+input:focus-visible, select:focus-visible { outline: 2px solid #8cc2ff; outline-offset: 2px; }
+
+.tabs { display: flex; gap: 4px; padding: 4px; margin: 0 auto 12px; width: fit-content; max-width: 100%;
+  background: #3a3b40; border-radius: var(--radius); flex-wrap: wrap; justify-content: center; }
+.tabs button {
+  border: 0; border-radius: 6px; padding: 7px 12px; background: transparent; color: var(--text);
+  font: inherit; cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--accent); }
+.tabs button:not([aria-selected="true"]):hover { background: #4a4c52; }
+
+[role="tabpanel"] { min-height: 150px; padding: 4px 6px; }
+.line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; margin: 6px 0 10px; }
+.line.indent { padding-left: 26px; }
+.strong { font-weight: 600; }
+.radio { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+.radio input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+input[type="number"], input[type="text"], select {
+  height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--field); color: var(--text); font: inherit;
+}
+input[type="number"] { width: 92px; }
+input.wide { width: 230px; }
+input.short { width: 64px; }
+input:disabled { opacity: .45; }
+.line label:not(:first-child) { margin-left: 10px; }
+
+.hint { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
+.warn { margin: 10px 0 0; color: var(--warn); }
+
+.start {
+  width: 100%; height: 46px; border: 0; border-radius: var(--radius); background: var(--accent);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 600; letter-spacing: .02em; cursor: pointer;
+}
+.start:hover:not(:disabled) { background: var(--accent-hover); }
+.start:disabled { opacity: .7; cursor: progress; }
+
+.progress { height: 4px; margin: 8px 0; background: #34353a; border-radius: 2px; overflow: hidden; }
+#bar { height: 100%; width: 0; background: var(--ok); transition: width .2s; }
+
+.log {
+  height: 260px; margin: 0; padding: 10px 12px; overflow: auto; white-space: pre-wrap;
+  background: #18191b; border-radius: var(--radius); color: #dcdde0;
+  font: 12px/1.5 ui-monospace, Consolas, Menlo, monospace;
+}
+
+footer { margin-top: 12px; color: var(--muted); font-size: 12px; text-align: center; }
+
+body.busy .folders, body.busy .tabs-panel { pointer-events: none; opacity: .6; }
+
+@media (max-width: 640px) {
+  .row { grid-template-columns: 1fr; }
+  .line.indent { padding-left: 0; }
+}

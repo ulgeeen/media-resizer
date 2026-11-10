@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Media Resizer</title>
+  <meta name="description" content="Toplu görsel ve video boyutlandırma, video + görsel birleştirme. Dosyalar tarayıcıda işlenir, hiçbir yere yüklenmez.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='6' fill='%232f7fd0'/%3E%3Cpath d='M10 22V10h12' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="lib/pako_inflate.min.js"></script>
+  <script src="lib/UTIF.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Media Resizer</h1>
+    <p class="sub">Toplu görsel &amp; video boyutlandırma • Video + görsel birleştirme</p>
+    <p class="privacy">🔒 Dosyalar hiçbir yere yüklenmez; tüm işlem bu bilgisayarda, tarayıcının içinde yapılır.</p>
+  </header>
+
+  <section class="panel folders">
+    <div class="row">
+      <span class="label">Kaynak (IMPORT)</span>
+      <div class="field drop" id="drop" tabindex="-1">
+        <span id="srcInfo">Klasörü ya da dosyaları buraya sürükleyin</span>
+      </div>
+      <div class="btns">
+        <label class="btn">Klasör Seç<input type="file" id="pickDir" webkitdirectory hidden></label>
+        <label class="btn ghost">Dosya Seç<input type="file" id="pickFiles" multiple hidden
+          accept=".jpg,.jpeg,.png,.webp,.bmp,.tif,.tiff,.mp4,.mov,.mkv,.webm,.avi"></label>
+      </div>
+    </div>
+    <div class="row">
+      <span class="label">Hedef (EXPORT)</span>
+      <div class="field" id="outInfo"></div>
+      <div class="btns"><button type="button" class="btn" id="pickOut">Klasör Seç</button></div>
+    </div>
+  </section>
+
+  <section class="panel tabs-panel">
+    <div class="tabs" role="tablist" aria-label="İşlem türü">
+      <button type="button" role="tab" data-tab="img" aria-selected="true" aria-controls="tab-img">🖼️ Görsel Boyutlandırma</button>
+      <button type="button" role="tab" data-tab="vid" aria-selected="false" aria-controls="tab-vid">🎬 Video Boyutlandırma</button>
+      <button type="button" role="tab" data-tab="merge" aria-selected="false" aria-controls="tab-merge">🔗 Video + Görsel Birleştirme</button>
+    </div>
+
+    <div role="tabpanel" id="tab-img">
+      <div class="line">
+        <label for="imgFormat" class="strong">Çıktı Formatı:</label>
+        <select id="imgFormat">
+          <option value="webp">WebP (Kayıpsız)</option>
+          <option value="png">PNG (Transparan)</option>
+          <option value="jpg">JPG (Yüksek Kalite)</option>
+        </select>
+      </div>
+      <label class="radio"><input type="radio" name="imgMode" value="square" checked> Otomatik Kare Kırp (Kısa kenara göre 1:1, Sıfır Bozulma)</label>
+      <label class="radio"><input type="radio" name="imgMode" value="custom"> Özel Çözünürlük Belirle (px)</label>
+      <div class="line indent">
+        <label for="imgW">Genişlik:</label><input id="imgW" type="number" min="1" inputmode="numeric" placeholder="Ör: 300">
+        <label for="imgH">Yükseklik:</label><input id="imgH" type="number" min="1" inputmode="numeric" placeholder="Ör: 385">
+      </div>
+    </div>
+
+    <div role="tabpanel" id="tab-vid" hidden>
+      <div class="line">
+        <label for="vidW">Hedef Genişlik (px):</label><input id="vidW" type="number" min="1" inputmode="numeric" value="1080">
+        <label for="vidH">Hedef Yükseklik (px):</label><input id="vidH" type="number" min="1" inputmode="numeric" value="1920">
+      </div>
+      <p class="hint">💡 Videolar en-boy oranı korunarak (esnetilmeden) hedef boyuta kırpılır (cover crop).<br>
+        Genişlik veya yükseklikten biri boş bırakılırsa kırpma yapılmadan orantılı küçültülür.<br>
+        Tüm videolar tek tek kendi orijinal ismiyle (boşluksuz) .mp4 olarak kaydedilir.</p>
+      <p class="warn" id="vidWarn" hidden>⚠ Bu tarayıcı video işleyemiyor. Chrome, Edge ya da güncel Safari kullanın.</p>
+    </div>
+
+    <div role="tabpanel" id="tab-merge" hidden>
+      <div class="line">
+        <label for="mergeName">Çıktı Dosya Adı:</label><input id="mergeName" type="text" class="wide" value="birlestirilmis_video.mp4">
+        <label for="mergeDur">Görsel Süresi (sn):</label><input id="mergeDur" type="text" inputmode="decimal" class="short" value="3.0">
+        <button type="button" class="btn ghost" id="analyze">🔍 Klasörü Analiz Et</button>
+      </div>
+      <p class="hint">💡 Önce videolar (isim sırasıyla), ardından görseller tek bir MP4'te birleştirilir.<br>
+        Çözünürlük, klasördeki en küçük görselin boyutudur (görsel yoksa en küçük video).<br>
+        Kırpma veya esnetme yapılmaz; oranı farklı medyaya siyah bant eklenir.</p>
+      <p class="warn" id="mergeWarn" hidden>⚠ Bu tarayıcı video işleyemiyor. Chrome, Edge ya da güncel Safari kullanın.</p>
+    </div>
+  </section>
+
+  <button type="button" class="start" id="start">İŞLEMİ BAŞLAT</button>
+  <div class="progress" aria-hidden="true"><div id="bar"></div></div>
+  <pre class="log" id="log" aria-live="polite"></pre>
+
+  <footer>Chrome ve Edge önerilir. Hedef klasördeki mevcut dosyaların üzerine yazılmaz; aynı isim varsa _2, _3 eklenir.</footer>
+</main>
+</body>
+</html>
